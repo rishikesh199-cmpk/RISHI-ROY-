@@ -26,13 +26,13 @@ module.exports.run = async function ({ api, event, args }) {
     let userMessage = args.join(" ");
 
     // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "on") {
+    if (userMessage.toLowerCase() === "") {
         autoReplyEnabled[senderID] = true;
         return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹", threadID, messageID);
     }
 
     // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "noprefix") {
+    if (userMessage.toLowerCase() === "") {
         autoReplyEnabled[senderID] = false;
         chatHistories[senderID] = [];
         return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
