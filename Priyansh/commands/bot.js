@@ -7,7 +7,7 @@ module.exports.config = {
     credits: "Mirrykal",
     description: "Gemini AI - Intelligent assistant",
     commandCategory: "ai",
-    usages: "[ask/on/off]",
+    usages: "[ask//]",
     cooldowns: 2,
     dependencies: {
         "axios": ""
@@ -23,7 +23,7 @@ const autoReplyEnabled = {};
 
 module.exports.run = async function ({ api, event, args }) {
     const { threadID, messageID, senderID, messageReply } = event;
-    let userMessage = args.join(" ");
+    let userMessage = args.join("");
 
     // Toggle auto-reply NOPREFIX 
     if (userMessage.toLowerCase() === "") {
