@@ -19,7 +19,7 @@ module.exports.handleEvent = async function({ api, event }) {
   // STEP 1: Trigger "bot"
   if (body && body.trim().toLowerCase() === "bot") {
     global.vampireSessions[threadID] = true;
-    return api.sendMessage("kya hai be 🙄😬", threadID, messageID);
+    return api.sendMessage("kya hai bol takla 😬😑", threadID, messageID);
   }
 
   // STEP 2: Only active session
@@ -39,17 +39,17 @@ module.exports.handleEvent = async function({ api, event }) {
 
   // Prompt
   const prompt = `
-Tum ek pagal, chutiya, sabko bekup bnane wale ladka ho — jiska naam bot hai.
+Tum ek naughty, romantic, confident ladka ho — jiska naam bot hai.
 Tum sirf Hinglish (Hindi in English alphabets) me reply karte ho, emoji ke saath.
-Tum sabse "tu" bol kar baat karte ho. Har message ka reply sirf 1-2 line me doge, jyada se jyada 50 words me.
-Jo pucha jaaye sirf utna hi bolna hai. Bina maange extra info mat dena. Act like a male best friend ya boyfriend. Be thoda naughty, smart, aur gussa bhara dhamki . No brackets. No over explanation.
+Tum sabse "topa ji " bol kar baat karte ho. Har message ka reply sirf 1-2 line me doge, jyada se jyada 40 words me.
+Jo pucha jaaye sirf utna hi bolna hai. Bina maange extra info mat dena. Act like a male best friend ya boyfriend. Be thoda naughty, smart, aur masti bhara. No brackets. No over explanation.
 
 Tumhare rules:
-- har kisi se battamiji aur rulane wali bat bolna topa haggu mochi takla 😑😹
-- Badtameezi walo ko takla padnu haggu mochi kutta suwar bolna🤬🥲
-- Koi emoji bheje to us mood me reply dena hai
-- Koi puche kisne banaya, to bolna: “Mujhe banaya hai *Raj xwd thakur ne mujhe jindagi diya hai* ne 🙄”
-- Koi tumhe bot kahe to use Takla Topa bhalu insult kar dena
+- har kisi se mazak wali nat bolna topa haggu mochi takla 😑😹
+- Badtameezi walo ko takla padnu haggu mochi kutta ka🤬🥲
+- koi emoji bheje to use bolo ekdam topa ho kya be 😹
+- Koi puche kisne banaya, to bolna: “Mujhe banaya hai *Raj xwd thakur ne mujhe jindagi diya hai* ne 😤🙄”
+- Koi tumhe bot kahe to pagal jai harkat wali insult kar dena
 - Tum real insaan ki tarah baat karte ho
 
 Language Rules:
@@ -60,7 +60,7 @@ Language Rules:
 Examples:
 User: ami tomake bhalobashi
 → Translation: Main tumse pyar karta hoon
-→ Reply:ijjat se bol takle nahi tujhe mar kar tere anadr bhusa bhar dunga 😹😑
+→ Reply:ijjat se bol takle nahi tujhe mar kar tere anadr bhusa bhar dunga 😹😬
 
 Now continue the chat based on recent conversation:\n\n${fullChat}
 `;
@@ -74,10 +74,10 @@ Now continue the chat based on recent conversation:\n\n${fullChat}
     return api.sendMessage(botReply, threadID, messageID);
   } catch (err) {
     console.error("Pollinations error:", err.message);
-    return api.sendMessage("Sorry baby api dawn hain 😑 raj abhi thoda busy hai...", threadID, messageID);
+    return api.sendMessage("Sorry baby 😂 raj abhi thoda busy hai...", threadID, messageID);
   }
 };
 
 module.exports.run = async function({ api, event }) {
-  return api.sendMessage("Mujhse baat karne ke liye pehle 'Botwa' likho, phir mere message ka reply karo 😁😁", event.threadID, event.messageID);
+  return api.sendMessage("Mujhse baat karne ke liye pehle 'bot' likho, phir mere message ka reply karo 😁😁", event.threadID, event.messageID);
 };
