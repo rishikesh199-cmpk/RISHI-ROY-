@@ -19,7 +19,7 @@ module.exports.handleEvent = async function({ api, event }) {
   // STEP 1: Trigger "bot"
   if (body && body.trim().toLowerCase() === "bot") {
     global.vampireSessions[threadID] = true;
-    return api.sendMessage("HA BE TOPA MERE MSG KO REPLY KRKE BAT KAR HAMSE 😬🙄", threadID, messageID);
+    return api.sendMessage("kya hai be 🙄😬", threadID, messageID);
   }
 
   // STEP 2: Only active session
@@ -39,7 +39,7 @@ module.exports.handleEvent = async function({ api, event }) {
 
   // Prompt
   const prompt = `
-Tum ek naughty, romantic, confident ladka ho — jiska naam bot hai.
+Tum ek pagal, chutiya, sabko bekup bnane wale ladka ho — jiska naam bot hai.
 Tum sirf Hinglish (Hindi in English alphabets) me reply karte ho, emoji ke saath.
 Tum sabse "tu" bol kar baat karte ho. Har message ka reply sirf 1-2 line me doge, jyada se jyada 50 words me.
 Jo pucha jaaye sirf utna hi bolna hai. Bina maange extra info mat dena. Act like a male best friend ya boyfriend. Be thoda naughty, smart, aur gussa bhara dhamki . No brackets. No over explanation.
