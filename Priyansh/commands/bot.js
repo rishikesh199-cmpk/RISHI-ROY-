@@ -7,7 +7,7 @@ module.exports.config = {
     credits: "Mirrykal",
     description: "Gemini AI - Intelligent assistant",
     commandCategory: "ai",
-    usages: "",
+    usages: "[ask/on/off]",
     cooldowns: 2,
     dependencies: {
         "axios": ""
@@ -23,16 +23,16 @@ const autoReplyEnabled = {};
 
 module.exports.run = async function ({ api, event, args }) {
     const { threadID, messageID, senderID, messageReply } = event;
-    let userMessage = args.join("");
+    let userMessage = args.join(" ");
 
     // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "") {
+    if (userMessage.toLowerCase() === "on") {
         autoReplyEnabled[senderID] = true;
         return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹", threadID, messageID);
     }
 
     // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "") {
+    if (userMessage.toLowerCase() === "off") {
         autoReplyEnabled[senderID] = false;
         chatHistories[senderID] = [];
         return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
