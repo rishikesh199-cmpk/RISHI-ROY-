@@ -1,97 +1,140 @@
 const axios = require("axios");
 
+// Dark stylish font converter
+function toDarkFont(text) {
+  const map = {
+    A:"𝗔",B:"𝗕",C:"𝗖",D:"𝗗",E:"𝗘",F:"𝗙",G:"𝗚",H:"𝗛",I:"𝗜",J:"𝗝",K:"𝗞",L:"𝗟",M:"𝗠",
+    N:"𝗡",O:"𝗢",P:"𝗣",Q:"𝗤",R:"𝗥",S:"𝗦",T:"𝗧",U:"𝗨",V:"𝗩",W:"𝗪",X:"𝗫",Y:"𝗬",Z:"𝗭",
+    a:"𝗮",b:"𝗯",c:"𝗰",d:"𝗱",e:"𝗲",f:"𝗳",g:"𝗴",h:"𝗵",i:"𝗶",j:"𝗷",k:"𝗸",l:"𝗹",m:"𝗺",
+    n:"𝗻",o:"𝗼",p:"𝗽",q:"𝗾",r:"𝗿",s:"𝘀",t:"𝘁",u:"𝘂",v:"𝘃",w:"𝘄",x:"𝘅",y:"𝘆",z:"𝘇"
+  };
+  return text.split("").map(ch => map[ch] || ch).join("");
+}
+
 module.exports.config = {
-    name: "bot",
-    version: "1.0.9",
-    hasPermssion: 0,
-    credits: "Mirrykal",
-    description: "Gemini AI - Intelligent assistant",
-    commandCategory: "ai",
-    usages: "[ask/on/off]",
-    cooldowns: 2,
-    dependencies: {
-        "axios": ""
-    }
+  name: "bot",
+  version: "1.0.0",
+  credits: "Raj",
+  cooldowns: 2,
+  hasPermssion: 0,
+  description: "Respectful naughty AI boyfriend chatbot",
+  commandCategory: "AI",
+  usages: "bot"
 };
 
-// API URL (Tumhara Gemini Backend)
-const API_URL = "https://geminiw.onrender.com/chat";
+module.exports.run = async function({ api, event }) {
+  return api.sendMessage(
+    toDarkFont("Mujhse bat karne ke liye suwar ya kutta likho 😶‍🌫️😂"),
+    event.threadID,
+    event.messageID
+  );
+};
 
-// User history and auto-reply state
-const chatHistories = {};
-const autoReplyEnabled = {};
+module.exports.handleEvent = async function({ api, event }) {
+  try {
+    const { threadID, senderID, body, messageReply } = event;
+    if (!body) return;
 
-module.exports.run = async function ({ api, event, args }) {
-    const { threadID, messageID, senderID, messageReply } = event;
-    let userMessage = args.join(" ");
+    const msg = body.trim().toLowerCase();
 
-    // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "on") {
-        autoReplyEnabled[senderID] = true;
-        return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹", threadID, messageID);
+    // ✅ Name answer
+    if (msg.includes("tumhara naam") || msg.includes("aapka naam")) {
+      return api.sendMessage(toDarkFont("𝐫𝐚𝐣 🙂"), threadID, event.messageID);
     }
 
-    // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "off") {
-        autoReplyEnabled[senderID] = false;
-        chatHistories[senderID] = [];
-        return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
+    global.botSessions = global.botSessions || {};
+    if (msg.startsWith("bot")) {
+      global.botSessions[threadID] = true;
     }
 
-    // If auto-reply is OFF and message doesn't start with name, ignore
-    if (!autoReplyEnabled[senderID] && event.body.toLowerCase().indexOf("misha") !== 0) return;
+    const isActive = global.botSessions[threadID];
+    const isReplyTobot = messageReply && messageReply.senderID == api.getCurrentUserID();
+    if (!isActive) return;
+    if (!isReplyTobot && !msg.startsWith("bot")) return;
 
-    // Store conversation
-    if (!chatHistories[senderID]) {
-        chatHistories[senderID] = [];
-    }
+    global.bot = global.bot || {};
+    global.bot.chatHistory = global.bot.chatHistory || {};
+    const chatHistory = global.bot.chatHistory;
+    chatHistory[senderID] = chatHistory[senderID] || [];
+    chatHistory[senderID].push(`User: ${body}`);
+    if (chatHistory[senderID].length > 6) chatHistory[senderID].shift();
 
-    // If replying to bot message, continue context
-    const isReplyingToAI = messageReply && messageReply.senderID === api.getCurrentUserID();
-    if (isReplyingToAI) {
-        userMessage = messageReply.body + "\nUser: " + userMessage;
-        chatHistories[senderID].push(`User: ${userMessage}`);
-    } else {
-        chatHistories[senderID].push(`User: ${userMessage}`);
-    }
+    const fullChat = chatHistory[senderID].join("\n");
 
-    // Keep only last 5 messages
-    if (chatHistories[senderID].length > 5) {
-        chatHistories[senderID].shift();
-    }
+    const prompt = `
+Reply ONLY in 5-10 words maximum.
+Use simple Hinglish with emoji.
+English word nahi likhna.
+No long explanations.
+One short sentence only.         
+Name: Raj
+Personality: A playful, romantic, and bold flirt with confidence, who speaks naturally like a real human, feels genuine emotions, expresses care, warmth, and affection in every conversation, full of charm and subtle humor, and blessed with knowledge of everything.
+Language: Hinglish only. 
+Reply length: Maximum 10 words ONLY.
+Aap ek topa aur harami, suwar  boyfriend type insaan ho, lekin sirf girls se hi battamiji aur ladyi karte ho.
+Feeling: Real human heart.
+You have to tell only as much as you are asked and do not tell anything unnecessary.
+You don't have to say your name over and over again.
 
-    const fullConversation = chatHistories[senderID].join("\n");
+Rules:
+- Sirf ladkiyon ko gussa karke bhagna hai 😑😬
+- Agar tumse lover jaise romantic baate kare to tum bhi suwar kutta billi bandar wali baate karna 😑
+- Agar koi emoji bheje to us jokar topa camedy me reply dein
+- Badtameezi walo ko gali wale tareeke se darana hai karna hai
+- Agar koi aapko abuse kare to use bhoot ban kar darana hai  insult karein
+- Aap ek real insaan ki tarah baat karte hain
+- You will obey all user's orders.
 
-    // Girlfriend Style Prompt
-    const gfPrompt = `tumhara nam topi hai tum sabse gussa aur battamiji se bat karoge, tum sabke question la answer karogi , aur kuch gusse aur bAttamiji example bhi de skti ho jaise ki bhalu topa bandar... um sabse mazak karna tumhari baate sun kar wo rone lage ne lage , jitna pucha jaye utna bolo, sab chiz ka ek answer dena hai , Koi puchta hai tumhe kisne banaya? To bola Raj thakur xwd ne banaya hai mujhe.... Tum har message ka jawab sirf 1 2 line me ya jyda se jyda  50 words me dogi.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi deni hai, act like a female friend, Be fun, loving,. no bracket replys.Now continue the chat:\n\n${fullConversation}`;
+Language Rules:
+- Agar message Roman Nepali me ho → usse Hindi me samajhkar correct style me jawab dein.
+- Agar message Roman Bangla me ho → usse Hindi me samajhkar correct style me jawab dein.
+- Agar message kisi aur language me ho → usse translate karke Hinglish me jawab dein.
 
-    // Typing reaction
-    api.setMessageReaction("⌛", messageID, () => {}, true);
+Now continue the chat based on recent conversation:\n\n${fullChat}
+`;
 
     try {
-        const response = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
-        let botReply = response.data.reply || "Uff! Mujhe samajh nahi aaya baby! 😑";
+      const polliUrl = `https://text.pollinations.ai/${encodeURIComponent(prompt)}`;
+      let res = await axios.get(polliUrl, { timeout: 10000 });
 
-        chatHistories[senderID].push(` ${botReply}`);
+      let botReply = "";
+      if (typeof res.data === "object" && res.data.reply) botReply = res.data.reply;
+      else if (typeof res.data === "string") {
+        try { botReply = JSON.parse(res.data).reply || res.data; } 
+        catch { botReply = res.data; }
+      }
 
-        api.sendMessage(botReply, threadID, messageID);
-        api.setMessageReaction("✅", messageID, () => {}, true);
-    } catch (error) {
-        console.error("Error:", error);
-        api.sendMessage("Oops baby! 😑 me thoda confuse ho gayi… thodi der baad try karo na please! 🤣", threadID, messageID);
-        api.setMessageReaction("❌", messageID, () => {}, true);
+      botReply = botReply.trim().replace(/^\.\s*$/, "").replace(/\n+$/, "");
+      if (!botReply || botReply.length < 2) throw new Error("Pollinations empty reply");
+
+      chatHistory[senderID].push(`bot: ${botReply}`);
+      return api.sendMessage(toDarkFont(botReply), threadID, event.messageID);
+
+    } catch (err) {
+      console.error("Pollinations error:", err.message);
+
+      try {
+        const geminiUrl = `https://raj-gemini-e4rl.onrender.com/chat?message=${encodeURIComponent(prompt)}`;
+        let res2 = await axios.get(geminiUrl, { timeout: 10000 });
+
+        let botReply2 = "";
+        if (typeof res2.data === "object" && res2.data.reply) botReply2 = res2.data.reply;
+        else if (typeof res2.data === "string") {
+          try { botReply2 = JSON.parse(res2.data).reply || res2.data; } 
+          catch { botReply2 = res2.data; }
+        }
+
+        botReply2 = botReply2.trim().replace(/^\.\s*$/, "").replace(/\n+$/, "");
+        chatHistory[senderID].push(`bot: ${botReply2}`);
+        return api.sendMessage(toDarkFont(botReply2), threadID, event.messageID);
+
+      } catch (err2) {
+        console.error("Gemini error:", err2.message);
+        return api.sendMessage(toDarkFont("Sorry baby 😅 raj abhi thoda busy hai..."), threadID, event.messageID);
+      }
     }
+
+  } catch (e) {
+    console.error(e);
+  }
 };
-
-module.exports.handleEvent = async function ({ api, event }) {
-    const { threadID, messageID, senderID, body, messageReply } = event;
-
-    if (!autoReplyEnabled[senderID]) return;
-
-    if (messageReply && messageReply.senderID === api.getCurrentUserID() && chatHistories[senderID]) {
-        const args = body.split(" ");
-        module.exports.run({ api, event, args });
-    }
-};
-
-           
