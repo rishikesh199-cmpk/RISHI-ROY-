@@ -1,95 +1,47 @@
 const axios = require("axios");
-
 module.exports.config = {
-    name: "bot",
-    version: "1.0.9",
-    hasPermssion: 0,
-    credits: "Mirrykal",
-    description: "Gemini AI - Intelligent assistant",
-    commandCategory: "ai",
-    usages: "[ask/on/off]",
-    cooldowns: 2,
-    dependencies: {
-        "axios": ""
-    }
+  'name': 'ai',
+  'version': '1.0.0',
+  'hasPermission': 0x0,
+  'credits': "api by jerome",
+  'description': "Gpt architecture",
+  'usePrefix': false,
+  'commandCategory': 'GPT4',
+  'cooldowns': 0x5
 };
-
-// API URL (Tumhara Gemini Backend)
-const API_URL = "https://geminiw.onrender.com/chat";
-
-// User history and auto-reply state
-const chatHistories = {};
-const autoReplyEnabled = {};
-
-module.exports.run = async function ({ api, event, args }) {
-    const { threadID, messageID, senderID, messageReply } = event;
-    let userMessage = args.join(" ");
-
-    // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "on") {
-        autoReplyEnabled[senderID] = true;
-        return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹😑", threadID, messageID);
-    }
-
-    // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "off") {
-        autoReplyEnabled[senderID] = false;
-        chatHistories[senderID] = [];
-        return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
-    }
-
-    // If auto-reply is OFF and message doesn't start with name, ignore
-    if (!autoReplyEnabled[senderID] && event.body.toLowerCase().indexOf("misha") !== 0) return;
-
-    // Store conversation
-    if (!chatHistories[senderID]) {
-        chatHistories[senderID] = [];
-    }
-
-    // If replying to bot message, continue context
-    const isReplyingToAI = messageReply && messageReply.senderID === api.getCurrentUserID();
-    if (isReplyingToAI) {
-        userMessage = messageReply.body + "\nUser: " + userMessage;
-        chatHistories[senderID].push(`User: ${userMessage}`);
+module.exports.run = async function ({
+  api: _0x1a65dd,
+  event: _0x129feb,
+  args: _0x3447aa
+}) {
+  try {
+    const {
+      messageID: _0x3982a1,
+      messageReply: _0x452cb0
+    } = _0x129feb;
+    let _0xa7eccd = _0x3447aa.join(" ");
+    if (_0x452cb0 && !_0xa7eccd) {
+      const _0x50a417 = _0x452cb0.body;
+      _0xa7eccd = _0x50a417;
     } else {
-        chatHistories[senderID].push(`User: ${userMessage}`);
+      if (!_0xa7eccd) {
+        return _0x1a65dd.sendMessage("Please provide a prompt to generate a text response.\nExample: ai What is the meaning of life?", _0x129feb.threadID, _0x3982a1);
+      }
     }
-
-    // Keep only last 5 messages
-    if (chatHistories[senderID].length > 5) {
-        chatHistories[senderID].shift();
+    _0x1a65dd.sendMessage("🤖 Processing your request...", _0x129feb.threadID);
+    await new Promise(_0x2adb56 => setTimeout(_0x2adb56, 0x7d0));
+    const _0x1b4bc6 = "http://fi1.bot-hosting.net:6518/gpt?query=" + encodeURIComponent(_0xa7eccd) + "&model=gpt-4-32k-0314";
+    const _0x49d4e9 = await axios.get(_0x1b4bc6);
+    if (_0x49d4e9.data && _0x49d4e9.data.response) {
+      const _0x2e9f35 = _0x49d4e9.data.response;
+      const _0x271e54 = "\n                🤖 AI Response:\n                ━━━━━━━━━━━━━━━━━━━\n                \n                📌 Your Prompt:\n                \"" + _0xa7eccd + "\"\n                \n                📝 Generated Text:\n                \"" + _0x2e9f35 + "\"\n                \n                ━━━━━━━━━━━━━━━━━━━\n            ";
+      _0x1a65dd.sendMessage(_0x271e54, _0x129feb.threadID, _0x3982a1);
+    } else {
+      console.error("API response did not contain expected data:", _0x49d4e9.data);
+      _0x1a65dd.sendMessage("❌ An error occurred while generating the text response. Please try again later. Response data: " + JSON.stringify(_0x49d4e9.data), _0x129feb.threadID, _0x3982a1);
     }
-
-    const fullConversation = chatHistories[senderID].join("\n");
-
-    // Girlfriend Style Prompt
-    const gfPrompt = `tumhara nam topi hai tum sabse gussa aur battamiji se bat karoge, tum sabke question la answer karogi , aur kuch gusse aur bAttamiji example bhi de skti ho jaise ki bhalu topa bandar... um sabse mazak karna tumhari baate sun kar wo rone lage ne lage , jitna pucha jaye utna bolo, sab chiz ka ek answer dena hai , Koi puchta hai tumhe kisne banaya? To bola Raj thakur xwd ne banaya hai mujhe.... Tum har message ka jawab sirf 1 2 line me ya jyda se jyda  50 words me dogi.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi deni hai, act like a female friend, Be fun, loving,. no bracket replys.Now continue the chat:\n\n${fullConversation}`;
-
-    // Typing reaction
-    api.setMessageReaction("", messageID, () => {}, true);
-
-    try {
-        const response = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
-        let botReply = response.data.reply || "Uff! Mujhe samajh nahi aaya baby! 😑";
-
-        chatHistories[senderID].push(` ${botReply}`);
-
-        api.sendMessage(botReply, threadID, messageID);
-        api.setMessageReaction("", messageID, () => {}, true);
-    } catch (error) {
-        console.error("Error:", error);
-        api.sendMessage("Oops baby! 😑 me thoda confuse ho gayi… thodi der baad try karo na please! 🤣", threadID, messageID);
-        api.setMessageReaction("❌", messageID, () => {}, true);
-    }
-};
-
-module.exports.handleEvent = async function ({ api, event }) {
-    const { threadID, messageID, senderID, body, messageReply } = event;
-
-    if (!autoReplyEnabled[senderID]) return;
-
-    if (messageReply && messageReply.senderID === api.getCurrentUserID() && chatHistories[senderID]) {
-        const args = body.split(" ");
-        module.exports.run({ api, event, args });
-    }
+  } catch (_0x52baf4) {
+    console.error("Error:", _0x52baf4);
+    _0x1a65dd.sendMessage("❌ An error occurred while generating the text response. Please try again later. Error details: " + _0x52baf4.message, _0x129feb.threadID, _0x129feb.messageID);
+  }
 };
