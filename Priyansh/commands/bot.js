@@ -7,7 +7,7 @@ module.exports.config = {
     credits: "Mirrykal",
     description: "Gemini AI - Intelligent assistant",
     commandCategory: "ai",
-    usages: "[noprefix//]",
+    usages: "[ask/on/off]",
     cooldowns: 2,
     dependencies: {
         "axios": ""
@@ -26,19 +26,19 @@ module.exports.run = async function ({ api, event, args }) {
     let userMessage = args.join(" ");
 
     // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "bot") {
+    if (userMessage.toLowerCase() === "on") {
         autoReplyEnabled[senderID] = true;
-        return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹", threadID, messageID);
+        return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹😑", threadID, messageID);
     }
 
     // Toggle auto-reply NOPREFIX 
-    if (userMessage.toLowerCase() === "bot") {
+    if (userMessage.toLowerCase() === "off") {
         autoReplyEnabled[senderID] = false;
         chatHistories[senderID] = [];
         return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
     }
 
-    // If auto-reply is noprefix and message doesn't start with name, ignore
+    // If auto-reply is OFF and message doesn't start with name, ignore
     if (!autoReplyEnabled[senderID] && event.body.toLowerCase().indexOf("misha") !== 0) return;
 
     // Store conversation
