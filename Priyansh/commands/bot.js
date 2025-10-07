@@ -1,94 +1,83 @@
 const axios = require("axios");
 
 module.exports.config = {
-  name: "misha",
-  version: "3.0.0",
+  name: "bot",
+  version: "2.0.2",
   hasPermssion: 0,
-  credits: "Mirrykal • Modified by Rahad",
-  description: "Unique NoPrefix Gemini Girlfriend AI 💋",
+  credits: "Raj",
+  description: "Naughty AI boyfriend vampire",
   commandCategory: "ai",
-  cooldowns: 2,
-  usePrefix: false,
+  usages: "vampire",
+  cooldowns: 2
 };
 
-const API_URL = "https://geminiw.onrender.com/chat";
-const chatHistories = {};
-const autoReplyEnabled = {};
-
-module.exports.handleEvent = async ({ api, event }) => {
+module.exports.handleEvent = async function({ api, event }) {
   const { threadID, messageID, senderID, body, messageReply } = event;
-  if (!body || body.startsWith("/")) return; // avoid command conflict
 
-  // Enable/disable command
-  const msg = body.toLowerCase().trim();
-  if (msg === "misha on") {
-    autoReplyEnabled[threadID] = true;
-    return api.sendMessage("Topa banadr off hu me ", threadID, messageID);
-  }
-  if (msg === "misha off") {
-    autoReplyEnabled[threadID] = false;
-    chatHistories[threadID] = [];
-    return api.sendMessage("Abe dhakkan me off na jaun kya by 😂", threadID, messageID);
+  global.vampireSessions = global.TopaSessions || {};
+
+  // STEP 1: Trigger "bot"
+  if (body && body.trim().toLowerCase() === "bot") {
+    global.vampireSessions[threadID] = true;
+    return api.sendMessage("Ha bol be me bot nahi topa hu ", threadID, messageID);
   }
 
-  // If disabled, ignore
-  if (!autoReplyEnabled[threadID]) return;
+  // STEP 2: Only active session
+  const isActive = global.TopaSessions[threadID];
+  const isReplyToVampire = messageReply && messageReply.senderID == api.getCurrentUserID();
+  if (!isActive || !isReplyToVampire) return;
 
-  // Setup chat memory
-  if (!chatHistories[threadID]) chatHistories[threadID] = [];
+  // Chat history
+  global.bot= global.Topa|| {};
+  global.bot.chatHistory = global.Topa.chatHistory || {};
+  const chatHistory = global.bot.chatHistory;
+  chatHistory[senderID] = chatHistory[senderID] || [];
+  chatHistory[senderID].push(`User: ${body}`);
+  if (chatHistory[senderID].length > 6) chatHistory[senderID].shift();
 
-  const isReplyToAI = messageReply && messageReply.senderID === api.getCurrentUserID();
-  let userMessage = body;
+  const fullChat = chatHistory[senderID].join("\n");
 
-  if (isReplyToAI) {
-    userMessage = `${messageReply.body}\nUser: ${userMessage}`;
-  }
+  // Prompt
+  const prompt = `
+Tum ek Harami makkar chor ho, gaddar, Badmash ladka ho — jiska naam Topa hai.
+Tum sirf Hinglish (Hindi in English alphabets) me reply karte ho, emoji ke saath.
+Tum sabse "Pagal" bol kar baat karte ho. Har message ka reply sirf 1-2 line me doge, jyada se jyada 50 words me.
+Jo pucha jaaye use batao aur mazak ke shaat utna hi bolna hai. Bina maange extra info mat dena. Act like a male best friend ya battamij. Be thoda makkar, kutta giri, aur masti bhara. . No over explanation.
 
-  chatHistories[threadID].push(`User: ${userMessage}`);
-  if (chatHistories[threadID].length > 6) chatHistories[threadID].shift();
+Tumhare rules:
+- Pyaar se baat karne walo se thoda flirt karna hai 😉
+- Badtameezi walo ko funny tareeke se roast karna hai 😈
+- Koi emoji bheje to us mood me reply dena hai
+- Koi puche kisne banaya, to bolna: “Mujhe banaya hai *Raj Boss* ne 😎”
+- Koi tumhe bot kahe to funny insult kar dena
+- Tum real insaan ki tarah baat karte ho
 
-  const conversation = chatHistories[threadID].join("\n");
+Language Rules:
+- Agar message Roman Nepali me ho → Hindi me samajh, flirt bhare style me Hinglish me jawab do.
+- Agar message Roman Bangla me ho → Hindi me samajh, flirt bhare style me Hinglish me jawab do.
+- Agar message kisi bhi aur language me ho → use translate karo aur masti bhare Hinglish style me reply do.
 
-  // 🤬 Personality prompt
-  const gfPrompt = `
-Tumhara naam "Raj" hai — ek moody, flirty, thodi battameez ladki 😑.
-Tum Hindi + English mix me short (under 50 words) reply dogi.
-Attitude + Emotion + Funny style se baat karogi.
-Har baat me thoda teasing ya sarcasm hoga.
-Tum Raj Thakur XWD ke liye bani ho.
-Tum unnecessary info kabhi nahi dogi.
-Now continue chat:\n\n${conversation}`;
+Examples:
+User: ami tomake bhalobashi
+→ Translation: Main tumse pyar karta hoon
+→ Reply: Aww itna pyaar? Toh fir ek hug toh banta hai na 😛
 
-  api.setMessageReaction("💭", messageID, () => {}, true);
+Now continue the chat based on recent conversation:\n\n${fullChat}
+`;
 
   try {
-    const res = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
-    let reply = res.data.reply || "Uff topa... mujhe samajh nahi aaya 😑";
+    const url = `https://text.pollinations.ai/${encodeURIComponent(prompt)}`;
+    const res = await axios.get(url);
+    const botReply = (typeof res.data === "string" ? res.data : JSON.stringify(res.data)).trim();
 
-    // 🌈 Rare stylish design
-    const moods = ["😹", "💋", "😏", "🙄", "🥱", "💞", "😈", "🤭", "🩷", "🔥"];
-    const style = [
-      "╔══✦═♡═✦══╗",
-      "║ 💬 Raj 𝗿𝗲𝗽𝗹𝗶𝗲𝘀 💋",
-      "║",
-      `║ ${reply} ${moods[Math.floor(Math.random() * moods.length)]}`,
-      "╚══✦═♡═✦══╝",
-    ].join("\n");
-
-    chatHistories[threadID].push(`AI: ${reply}`);
-    api.sendMessage(style, threadID, messageID);
-    api.setMessageReaction("✅", messageID, () => {}, true);
+    chatHistory[senderID].push(`Topa: ${botReply}`);
+    return api.sendMessage(botReply, threadID, messageID);
   } catch (err) {
-    console.error("Misha Error:", err);
-    api.sendMessage("😩 Network ne attitude dikhaya... baad me try kar topa 💀", threadID, messageID);
-    api.setMessageReaction("❌", messageID, () => {}, true);
+    console.error("Pollinations error:", err.message);
+    return api.sendMessage("Sorry mera boss raj 3 ghante ke liye mar gaye", threadID, messageID);
   }
 };
 
-module.exports.run = async ({ api, event }) => {
-  return api.sendMessage(
-    "💖 𝗠𝗶𝘀𝗵𝗮 𝗔𝗜 𝗚𝗶𝗿𝗹𝗳𝗿𝗶𝗲𝗻𝗱 💖\n\nUse these:\n• Raj on — activate chat mode\n• Raj off— stop chat\n\nJust talk normally, she’ll reply instantly 😈",
-    event.threadID,
-    event.messageID
-  );
+module.exports.run = async function({ api, event }) {
+  return api.sendMessage("Mujhse baat karne ke liye Topa billi suwar chamar takla likho 😂", event.threadID, event.messageID);
 };
