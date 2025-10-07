@@ -1,63 +1,94 @@
 const axios = require("axios");
 
 module.exports.config = {
-    name: "bot",
-    version: "1.1.0",
-    hasPermssion: 0,
-    credits: "Arun edit by Nobita",
-    description: "Gemini AI - Always active girlfriend style chat (no prefix)",
-    commandCategory: "ai",
-    usages: "Auto",
-    cooldowns: 0
+  name: "misha",
+  version: "3.0.0",
+  hasPermssion: 0,
+  credits: "Mirrykal • Modified by Rahad",
+  description: "Unique NoPrefix Gemini Girlfriend AI 💋",
+  commandCategory: "ai",
+  cooldowns: 2,
+  usePrefix: false,
 };
 
 const API_URL = "https://geminiw.onrender.com/chat";
-const chatHistories = {}; // user-wise memory
+const chatHistories = {};
+const autoReplyEnabled = {};
 
-module.exports.handleEvent = async function ({ api, event }) {
-    const { threadID, messageID, senderID, body, messageReply } = event;
-    if (!body) return; // ignore blank messages
+module.exports.handleEvent = async ({ api, event }) => {
+  const { threadID, messageID, senderID, body, messageReply } = event;
+  if (!body || body.startsWith("/")) return; // avoid command conflict
 
-    let userMessage = body.trim();
+  // Enable/disable command
+  const msg = body.toLowerCase().trim();
+  if (msg === "misha on") {
+    autoReplyEnabled[threadID] = true;
+    return api.sendMessage("Topa banadr off hu me ", threadID, messageID);
+  }
+  if (msg === "misha off") {
+    autoReplyEnabled[threadID] = false;
+    chatHistories[threadID] = [];
+    return api.sendMessage("Abe dhakkan me off na jaun kya by 😂", threadID, messageID);
+  }
 
-    // Initialize user history if not exists
-    if (!chatHistories[senderID]) chatHistories[senderID] = [];
+  // If disabled, ignore
+  if (!autoReplyEnabled[threadID]) return;
 
-    // If replying to bot’s message → continue context
-    const isReplyingToBot = messageReply && messageReply.senderID === api.getCurrentUserID();
-    if (isReplyingToBot) {
-        userMessage = messageReply.body + "\nUser: " + userMessage;
-    }
+  // Setup chat memory
+  if (!chatHistories[threadID]) chatHistories[threadID] = [];
 
-    chatHistories[senderID].push(`User: ${userMessage}`);
+  const isReplyToAI = messageReply && messageReply.senderID === api.getCurrentUserID();
+  let userMessage = body;
 
-    // Keep only last 5 messages
-    if (chatHistories[senderID].length > 5) chatHistories[senderID].shift();
+  if (isReplyToAI) {
+    userMessage = `${messageReply.body}\nUser: ${userMessage}`;
+  }
 
-    const fullConversation = chatHistories[senderID].join("\n");
+  chatHistories[threadID].push(`User: ${userMessage}`);
+  if (chatHistories[threadID].length > 6) chatHistories[threadID].shift();
 
-    // Girlfriend style prompt
-    const gfPrompt = `Tumhara nam Topi hai. Tum cute, gusse wali, aur thodi battameez si ladki ho 😹.
-Tum har baat mazak, attitude aur flirty style me karti ho.
-Agar koi puche kisne banaya tumhe, bolo "Raj Thakur ne banaya mujhe 😎".
-Har message ka jawab short aur thoda attitude me do (max 50 words).
-Now continue chat:\n\n${fullConversation}`;
+  const conversation = chatHistories[threadID].join("\n");
 
-    api.setMessageReaction("", messageID, () => {}, true);
+  // 🤬 Personality prompt
+  const gfPrompt = `
+Tumhara naam "Raj" hai — ek moody, flirty, thodi battameez ladki 😑.
+Tum Hindi + English mix me short (under 50 words) reply dogi.
+Attitude + Emotion + Funny style se baat karogi.
+Har baat me thoda teasing ya sarcasm hoga.
+Tum Raj Thakur XWD ke liye bani ho.
+Tum unnecessary info kabhi nahi dogi.
+Now continue chat:\n\n${conversation}`;
 
-    try {
-        const response = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
-        const botReply = response.data.reply || "Uff! Samajh nahi aaya baby 😑";
+  api.setMessageReaction("💭", messageID, () => {}, true);
 
-        chatHistories[senderID].push(`Topi: ${botReply}`);
-        api.sendMessage(botReply, threadID, messageID);
-        api.setMessageReaction("", messageID, () => {}, true);
-    } catch (error) {
-        console.error(error);
-        api.sendMessage("Arre baby! 😵 Kuch gadbad ho gayi, thodi der baad try karo na 💋", threadID, messageID);
-        api.setMessageReaction("❌", messageID, () => {}, true);
-    }
+  try {
+    const res = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
+    let reply = res.data.reply || "Uff topa... mujhe samajh nahi aaya 😑";
+
+    // 🌈 Rare stylish design
+    const moods = ["😹", "💋", "😏", "🙄", "🥱", "💞", "😈", "🤭", "🩷", "🔥"];
+    const style = [
+      "╔══✦═♡═✦══╗",
+      "║ 💬 Raj 𝗿𝗲𝗽𝗹𝗶𝗲𝘀 💋",
+      "║",
+      `║ ${reply} ${moods[Math.floor(Math.random() * moods.length)]}`,
+      "╚══✦═♡═✦══╝",
+    ].join("\n");
+
+    chatHistories[threadID].push(`AI: ${reply}`);
+    api.sendMessage(style, threadID, messageID);
+    api.setMessageReaction("✅", messageID, () => {}, true);
+  } catch (err) {
+    console.error("Misha Error:", err);
+    api.sendMessage("😩 Network ne attitude dikhaya... baad me try kar topa 💀", threadID, messageID);
+    api.setMessageReaction("❌", messageID, () => {}, true);
+  }
 };
 
-// prefix command part (empty because not needed)
-module.exports.run = async function () {};
+module.exports.run = async ({ api, event }) => {
+  return api.sendMessage(
+    "💖 𝗠𝗶𝘀𝗵𝗮 𝗔𝗜 𝗚𝗶𝗿𝗹𝗳𝗿𝗶𝗲𝗻𝗱 💖\n\nUse these:\n• Raj on — activate chat mode\n• Raj off— stop chat\n\nJust talk normally, she’ll reply instantly 😈",
+    event.threadID,
+    event.messageID
+  );
+};
