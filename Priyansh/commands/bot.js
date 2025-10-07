@@ -7,7 +7,7 @@ module.exports.config = {
     credits: "Arun edit by Nobita",
     description: "Gemini AI - Always active girlfriend style chat (no prefix)",
     commandCategory: "ai",
-    usages: "auto",
+    usages: "Auto",
     cooldowns: 0
 };
 
@@ -39,7 +39,7 @@ module.exports.handleEvent = async function ({ api, event }) {
     // Girlfriend style prompt
     const gfPrompt = `Tumhara nam Topi hai. Tum cute, gusse wali, aur thodi battameez si ladki ho 😹.
 Tum har baat mazak, attitude aur flirty style me karti ho.
-Agar koi puche kisne banaya tumhe, bolo "Raj Thakur ne banaya mujhe 🥱".
+Agar koi puche kisne banaya tumhe, bolo "Raj Thakur ne banaya mujhe 😎".
 Har message ka jawab short aur thoda attitude me do (max 50 words).
 Now continue chat:\n\n${fullConversation}`;
 
@@ -47,7 +47,7 @@ Now continue chat:\n\n${fullConversation}`;
 
     try {
         const response = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
-        const botReply = response.data.reply || "Uff! Samajh nahi aaya bhalu 😑";
+        const botReply = response.data.reply || "Uff! Samajh nahi aaya baby 😑";
 
         chatHistories[senderID].push(`Topi: ${botReply}`);
         api.sendMessage(botReply, threadID, messageID);
