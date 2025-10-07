@@ -49,7 +49,7 @@ Now continue chat:\n\n${fullConversation}`;
         const response = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
         const botReply = response.data.reply || "Uff! Samajh nahi aaya baby 😑";
 
-        chatHistories[senderID].push(`Topi: ${botReply}`);
+        chatHistories[senderID].push(`: ${botReply}`);
         api.sendMessage(botReply, threadID, messageID);
         api.setMessageReaction("", messageID, () => {}, true);
     } catch (error) {
