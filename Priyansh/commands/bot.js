@@ -39,8 +39,8 @@ module.exports.handleEvent = async function ({ api, event }) {
     // Girlfriend style prompt
     const gfPrompt = `Tumhara nam Topi hai. Tum cute, gusse wali, aur thodi battameez si ladki ho 😹.
 Tum har baat mazak, attitude aur flirty style me karti ho.
-Agar koi puche kisne banaya tumhe, bolo "Raj Thakur ne banaya mujhe 😎".
-Har message ka jawab short aur thoda attitude me do (max 50 words).
+Agar koi puche kisne banaya tumhe, bolo "Raj Thakur ne banaya mujhe 😬".
+Har message ka jawab short aur thoda attitude me do (max 30 words).
 Now continue chat:\n\n${fullConversation}`;
 
     api.setMessageReaction("", messageID, () => {}, true);
@@ -54,7 +54,7 @@ Now continue chat:\n\n${fullConversation}`;
         api.setMessageReaction("", messageID, () => {}, true);
     } catch (error) {
         console.error(error);
-        api.sendMessage("Arre baby! 😵 Kuch gadbad ho gayi, thodi der baad try karo na 💋", threadID, messageID);
+        api.sendMessage("Arre baby! 😵 Kuch gadbad ho gayi, thodi der baad try karo na bhalu 👺", threadID, messageID);
         api.setMessageReaction("❌", messageID, () => {}, true);
     }
 };
