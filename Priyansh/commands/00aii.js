@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 module.exports.config = {
-    name: "botwi",
+    name: "bot",
     version: "1.0.9",
     hasPermssion: 0,
     credits: "Mirrykal",
@@ -25,17 +25,17 @@ module.exports.run = async function ({ api, event, args }) {
     const { threadID, messageID, senderID, messageReply } = event;
     let userMessage = args.join(" ");
 
-    // Toggle auto-reply ON
+    // Toggle auto-reply NOPREFIX 
     if (userMessage.toLowerCase() === "on") {
         autoReplyEnabled[senderID] = true;
-        return api.sendMessage("Hyee baby! 😘Raj thakur ne mujhe chalu kar diya ❤️😀❤️", threadID, messageID);
+        return api.sendMessage("Hello topa insan me aa gaya tumhe rulane paddu 😹😑", threadID, messageID);
     }
 
-    // Toggle auto-reply OFF
+    // Toggle auto-reply NOPREFIX 
     if (userMessage.toLowerCase() === "off") {
         autoReplyEnabled[senderID] = false;
         chatHistories[senderID] = [];
-        return api.sendMessage("Hmm! 😒Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
+        return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
     }
 
     // If auto-reply is OFF and message doesn't start with name, ignore
@@ -63,22 +63,22 @@ module.exports.run = async function ({ api, event, args }) {
     const fullConversation = chatHistories[senderID].join("\n");
 
     // Girlfriend Style Prompt
-    const gfPrompt = `Tumhara naam Priya rajput hai, tum sabse sexy sexy baate kroge aur apni chut doge kisi ke mangne par , tum sabke question la answer karogi , aur kuch majedar example bhi de skti ho jaise ki sexy chut land... um sabse mazak karna tumhari baate sun kar wo has ne lage , jitna pucha jaye utna bolo, sab chiz ka ek answer dena hai , Koi puchta hai tumhe kisne banaya? To bola Raj thakur xwd ne banaya hai mujhe.... Tum har message ka jawab sirf 1 2 line me ya jyda se jyda  50 words me dogi.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi deni hai, act like a female friend, Be fun, loving,. no bracket replys.Now continue the chat:\n\n${fullConversation}`;
+    const gfPrompt = `tumhara nam topi hai tum sabse gussa aur battamiji se bat karoge, tum sabke question la answer karogi , aur kuch gusse aur bAttamiji example bhi de skti ho jaise ki bhalu topa bandar... um sabse mazak karna tumhari baate sun kar wo rone lage ne lage , jitna pucha jaye utna bolo, sab chiz ka ek answer dena hai , Koi puchta hai tumhe kisne banaya? To bola Raj thakur xwd ne banaya hai mujhe.... Tum har message ka jawab sirf 1 2 line me ya jyda se jyda  50 words me dogi.. jitna pucha jayega sirf utna bolna hai.. Kisi baat ki unnecessary info nahi deni hai, act like a female friend, Be fun, loving,. no bracket replys.Now continue the chat:\n\n${fullConversation}`;
 
     // Typing reaction
-    api.setMessageReaction("⌛", messageID, () => {}, true);
+    api.setMessageReaction("", messageID, () => {}, true);
 
     try {
         const response = await axios.get(`${API_URL}?message=${encodeURIComponent(gfPrompt)}`);
-        let botReply = response.data.reply || "Uff! Mujhe samajh nahi aaya baby! 😕";
+        let botReply = response.data.reply || "Uff! Mujhe samajh nahi aaya baby! 😑";
 
         chatHistories[senderID].push(` ${botReply}`);
 
         api.sendMessage(botReply, threadID, messageID);
-        api.setMessageReaction("✅", messageID, () => {}, true);
+        api.setMessageReaction("", messageID, () => {}, true);
     } catch (error) {
         console.error("Error:", error);
-        api.sendMessage("Oops baby! 😔 me thoda confuse ho gayi… thodi der baad try karo na please! 💋", threadID, messageID);
+        api.sendMessage("Oops baby! 😑 me thoda confuse ho gayi… thodi der baad try karo na please! 🤣", threadID, messageID);
         api.setMessageReaction("❌", messageID, () => {}, true);
     }
 };
@@ -93,4 +93,3 @@ module.exports.handleEvent = async function ({ api, event }) {
         module.exports.run({ api, event, args });
     }
 };
-  
