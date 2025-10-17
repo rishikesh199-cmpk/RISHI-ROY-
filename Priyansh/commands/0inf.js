@@ -1,10 +1,10 @@
 module.exports.config = {
-  name: "info",
+  name: "Owner",
   version: "4.0.0",
   hasPermssion: 0,
   credits: "Rudra",
   description: "Display swaggy owner and bot info with random stylish image",
-  commandCategory: "info",
+  commandCategory: "Owner",
   cooldowns: 1,
   dependencies: {
     "request": "",
@@ -34,7 +34,7 @@ module.exports.run = async function ({ api, event }) {
 
   const msg = `✨ 𝙎𝙒𝘼𝙂 𝙈𝙊𝘿𝙀 𝙊𝙉 ✨\n━━━━━━━━━━━━━━━\n\n` +
               `👑 𝗕𝗢𝗧: ${global.config.BOTNAME || "🔥 RAJ XWD THAKUR 👿"}\n` +
-              `🧠 𝗢𝗪𝗡𝗘𝗥:𝙍𝘼𝙅 𝙏𝙃𝘼𝙆𝙐𝙍 𝙓𝙒𝘿  🔥 (UID:100032269830615 )\n` +
+              `🧠 𝗢𝗪𝗡𝗘𝗥:𝙍𝘼𝙅 𝙏𝙃𝘼𝙆𝙐𝙍 𝙓𝙒𝘿  🔥 (UID:61574885940483 )\n` +
               `📸 𝗜𝗡𝗦𝗧𝗔: @rajthakur8` +
               `📍 𝗣𝗥𝗘𝗙𝗜𝗫: ${global.config.PREFIX || "+"}\n` +
               `📆 𝗗𝗔𝗧𝗘: ${dateNow}\n` +
