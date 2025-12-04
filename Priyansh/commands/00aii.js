@@ -35,7 +35,7 @@ module.exports.run = async function ({ api, event, args }) {
     if (userMessage.toLowerCase() === "off") {
         autoReplyEnabled[senderID] = false;
         chatHistories[senderID] = [];
-        return api.sendMessage("Hmm! 😑Raj thakur ne mujhe off kar diya 🥺", threadID, messageID);
+        return api.sendMessage("Hmm! 😑Rishi ne mujhe off kar diya 🥺", threadID, messageID);
     }
 
     // If auto-reply is OFF and message doesn't start with name, ignore
