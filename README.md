@@ -1,6 +1,6 @@
-# Raj Bot v2
+# Rishi Bot v2
 
-Welcome to **raj Bot v2**! This is a powerful and customizable bot built for automating various tasks on Facebook Messenger.![Image](https://github.com/user-attachments/assets/31ae0e17-bd27-43f8-b43f-43febb26057b)
+Welcome to **Rishi Bot v2**! This is a powerful and customizable bot built for automating various tasks on Facebook Messenger.![Image](https://github.com/user-attachments/assets/31ae0e17-bd27-43f8-b43f-43febb26057b)
 
 ## Table of Contents
 
