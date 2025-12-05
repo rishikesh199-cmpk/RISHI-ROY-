@@ -72,7 +72,7 @@ Now continue the chat based on recent conversation:\n\n${fullChat}
     return api.sendMessage(botReply, threadID, messageID);
   } catch (err) {
     console.error("Pollinations error:", err.message);
-    return api.sendMessage("Sorry baby api dawn hain 😑 raj abhi thoda busy hai...", threadID, messageID);
+    return api.sendMessage("Sorry baby api dawn hain 😑 Rishi abhi thoda busy hai...", threadID, messageID);
   }
 };
 
